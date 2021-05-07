@@ -90,7 +90,7 @@ class GridAdapter(
             context = context,
             angleRadius = angleRadius
         )?.round()
-        else image?.makeTransparent(40)
+        else image?.makeTransparent(40)?.addPadding(4, 4, 4, 4)
 
         return image
     }
@@ -114,7 +114,7 @@ class GridAdapter(
             topRightRadius = (angleRadius * 3.5).toInt(),
             rx = angleRadius.toFloat() * 1.5.toFloat(),
             ry = angleRadius.toFloat() * 2.1.toFloat()
-        ) else image?.makeTransparent(40)
+        ) else image?.makeTransparent(40)?.addPadding(4, 4, 4, 4)
 
         return image
     }
@@ -138,7 +138,7 @@ class GridAdapter(
             bottomLeftRadius = (angleRadius * 3.5).toInt(),
             rx = angleRadius.toFloat() * 1.9.toFloat(),
             ry = angleRadius.toFloat() * 1.6.toFloat()
-        ) else image?.makeTransparent(40)
+        ) else image?.makeTransparent(40)?.addPadding(4, 4, 4, 4)
 
         return image
     }
@@ -162,7 +162,7 @@ class GridAdapter(
             bottomRightRadius = angleRadius * 2,
             rx = angleRadius.toFloat() * 2.25.toFloat(),
             ry = angleRadius.toFloat() * 2.25.toFloat()
-        ) else image?.makeTransparent(40)
+        ) else image?.makeTransparent(40)?.addPadding(4, 4, 4, 4)
 
         return image
     }
@@ -174,7 +174,7 @@ class GridAdapter(
         var image: Bitmap? = this
 
         image = if (isActive) image?.setShadow(context, 0)
-        else image?.makeTransparent(40)
+        else image?.makeTransparent(40)?.addPadding(4, 4, 4, 4)
 
         return image
     }

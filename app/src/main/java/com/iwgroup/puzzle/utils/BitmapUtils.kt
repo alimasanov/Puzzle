@@ -199,3 +199,41 @@ fun getPathOfRoundedRectF(
         return this
     }
 }
+
+fun Bitmap.addPadding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) = this
+    .addPaddingBottomForBitmap(bottom)
+    ?.addPaddingLeftForBitmap(left)
+    ?.addPaddingRightForBitmap(right)
+    ?.addPaddingTopForBitmap(top)
+
+private fun Bitmap.addPaddingTopForBitmap(paddingTop: Int): Bitmap? {
+    val outputBitmap =
+        Bitmap.createBitmap(this.width, this.height + paddingTop, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(outputBitmap)
+    canvas.drawBitmap(this, 0f, paddingTop.toFloat(), null)
+    return outputBitmap
+}
+
+private fun Bitmap.addPaddingBottomForBitmap(paddingBottom: Int): Bitmap? {
+    val outputBitmap =
+        Bitmap.createBitmap(this.width, this.height + paddingBottom, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(outputBitmap)
+    canvas.drawBitmap(this, 0f, 0f, null)
+    return outputBitmap
+}
+
+private fun Bitmap.addPaddingRightForBitmap(paddingRight: Int): Bitmap? {
+    val outputBitmap =
+        Bitmap.createBitmap(this.width + paddingRight, this.height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(outputBitmap)
+    canvas.drawBitmap(this, 0f, 0f, null)
+    return outputBitmap
+}
+
+private fun Bitmap.addPaddingLeftForBitmap(paddingLeft: Int): Bitmap? {
+    val outputBitmap =
+        Bitmap.createBitmap(this.width + paddingLeft, this.height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(outputBitmap)
+    canvas.drawBitmap(this, paddingLeft.toFloat(), 0f, null)
+    return outputBitmap
+}
