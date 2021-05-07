@@ -1,6 +1,7 @@
 package com.iwgroup.puzzle
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,10 +12,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iwgroup.puzzle.databinding.FragmentFirstBinding
 import com.iwgroup.puzzle.grid.GridAdapter
+import com.iwgroup.puzzle.utils.getBitmap
+import com.iwgroup.puzzle.utils.slice
+import com.iwgroup.puzzle.utils.toPx
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 class FirstFragment : Fragment() {
 
     companion object {
@@ -26,22 +27,7 @@ class FirstFragment : Fragment() {
     private lateinit var vDividerItemDecoration: DividerItemDecoration
 
     private var _binding: FragmentFirstBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-
-    private val imageList = mutableListOf(
-        R.drawable.ic_launcher_background to false,
-        R.drawable.ic_launcher_background to false,
-        R.drawable.ic_launcher_background to false,
-        R.drawable.ic_launcher_background to false,
-        R.drawable.ic_launcher_background to false,
-        R.drawable.ic_launcher_background to false,
-        R.drawable.ic_launcher_background to false,
-        R.drawable.ic_launcher_background to false,
-        R.drawable.ic_launcher_background to false
-    )
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -54,23 +40,43 @@ class FirstFragment : Fragment() {
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = GridAdapter(requireContext(), imageList, SPAN_COUNT)
+        val bitmapList = context?.getBitmap(R.drawable.ic_launcher_background, 100.toPx() * SPAN_COUNT, 80.toPx() * SPAN_COUNT)
+            ?.slice(SPAN_COUNT)
+            ?.map { it to false }
+            ?.toMutableList()
+
+        bitmapList?.let {  } initRecyclerView()
+
+        binding.btnAddFragment.setOnClickListener {
+            adapter.listItem?.let { adapterListItem ->
+                with(adapterListItem.indexOfFirst { !it.second }) {
+                    if (this != -1) adapter.activateItem(this)
+                    else adapter.reset()
+                }
+            }
+        }
+    }
+
+    private fun initRecyclerView(bitmapList: MutableList<Pair<Bitmap, Boolean>>) {
+        initDecorator()
+        initAdapter(bitmapList)
+        binding.rvItems.layoutManager = GridLayoutManager(context, SPAN_COUNT, LinearLayoutManager.VERTICAL, false)
+    }
+
+    private fun initAdapter(bitmapList: MutableList<Pair<Bitmap, Boolean>>) {
+        adapter = GridAdapter(requireContext(), bitmapList, SPAN_COUNT)
+        binding.rvItems.adapter = adapter
+    }
+
+    private fun initDecorator() {
         hDividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         vDividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.HORIZONTAL)
+
         hDividerItemDecoration.setDrawable(resources.getDrawable(R.drawable.divider_item_decoration))
         vDividerItemDecoration.setDrawable(resources.getDrawable(R.drawable.divider_item_decoration))
 
-        binding.rvItems.layoutManager = GridLayoutManager(context, SPAN_COUNT, LinearLayoutManager.VERTICAL, false)
-        binding.rvItems.adapter = adapter
         context?.let { binding.rvItems.addItemDecoration(hDividerItemDecoration) }
         context?.let { binding.rvItems.addItemDecoration(vDividerItemDecoration) }
-
-        binding.btnAddFragment.setOnClickListener {
-            with(adapter.listItem.indexOfFirst { !it.second }) {
-                if (this != -1) adapter.activateItem(this)
-                else adapter.reset()
-            }
-        }
     }
 
     override fun onDestroyView() {

@@ -2,40 +2,41 @@ package com.iwgroup.puzzle.grid
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.DrawableRes
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.iwgroup.puzzle.*
 import com.iwgroup.puzzle.utils.*
 
 class GridAdapter(
     private val context: Context,
-    var listItem: MutableList<Pair<Int, Boolean>>,
+    var listItem: MutableList<Pair<Bitmap, Boolean>>?,
     private val spanCount: Int
 ) : RecyclerView.Adapter<GridAdapter.ViewHolder>() {
 
-    fun changeItem(position: Int) {
-        listItem[position] = R.drawable.ic_launcher_background to !listItem[position].second
+    private fun changeItem(position: Int) {
+        listItem?.let { it.set(position, it[position].first to !it[position].second) }
         notifyItemChanged(position)
     }
 
     fun activateItem(position: Int) {
-        if (!listItem[position].second) {
-            listItem[position] = R.drawable.ic_launcher_background to true
-            notifyItemChanged(position)
+        listItem?.let {
+            if (!it[position].second) {
+                it[position] = it[position].first to true
+                notifyItemChanged(position)
+            }
         }
     }
 
     fun reset() {
-        listItem.forEachIndexed { index, _ ->
-            listItem[index] = R.drawable.ic_launcher_background to false
-            notifyItemChanged(index)
+        listItem?.let {
+            it.forEachIndexed { index, _ ->
+                it[index] = it[index].first to false
+                notifyItemChanged(index)
+            }
         }
     }
 
@@ -50,25 +51,27 @@ class GridAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = listItem[position]
-        val angleRadius = 20
-        var image = context.getBitmap(
-            listItem[position].first,
-            100.toPx(),
-            80.toPx()
-        )
-        image = when (position) {
-            0 -> image?.makeTopLeftImage(context, angleRadius, item.second)
-            spanCount - 1 -> image?.makeTopRightImage(context, angleRadius, item.second)
-            itemCount - 1 -> image?.makeBottomRightImage(context, angleRadius, item.second)
-            itemCount - spanCount -> image?.makeBottomLeftImage(context, angleRadius, item.second)
-            else -> image?.makeImage(context, item.second)
-        }
-        holder.ivImage.setImageBitmap(image)
-        holder.tvNumber.text = position.toString()
+        listItem?.let {
+            val item = it[position]
+            val angleRadius = 20
+            var image: Bitmap? = it[position].first
+            image = when (position) {
+                0 -> image?.makeTopLeftImage(context, angleRadius, item.second)
+                spanCount - 1 -> image?.makeTopRightImage(context, angleRadius, item.second)
+                itemCount - 1 -> image?.makeBottomRightImage(context, angleRadius, item.second)
+                itemCount - spanCount -> image?.makeBottomLeftImage(
+                    context,
+                    angleRadius,
+                    item.second
+                )
+                else -> image?.makeImage(context, item.second)
+            }
+            holder.ivImage.setImageBitmap(image)
+            holder.tvNumber.text = position.toString()
 
-        holder.view.setOnClickListener {
-            changeItem(position)
+            holder.view.setOnClickListener {
+                changeItem(position)
+            }
         }
     }
 
@@ -179,5 +182,5 @@ class GridAdapter(
         return image
     }
 
-    override fun getItemCount(): Int = listItem.size
+    override fun getItemCount(): Int = listItem?.size ?: 0
 }

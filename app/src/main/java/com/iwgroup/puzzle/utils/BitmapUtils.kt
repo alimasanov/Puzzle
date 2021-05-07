@@ -8,6 +8,24 @@ import androidx.core.content.res.ResourcesCompat
 import java.io.FileNotFoundException
 import kotlin.math.max
 
+fun Bitmap.slice(rows: Int, columns: Int = rows): MutableList<Bitmap> {
+    val bitmapList = mutableListOf<Bitmap>()
+    val width = this.width
+    val height = this.height
+
+    val pixelByCol = this.width / columns
+    val pixelByRow = this.height / rows
+
+    for (row in 0 until rows) {
+        for (column in 0 until columns) {
+            val startX = pixelByCol * column
+            val startY = pixelByRow * row
+            bitmapList.add(Bitmap.createBitmap(this, startX, startY, pixelByCol, pixelByRow))
+        }
+    }
+
+    return bitmapList
+}
 
 fun Bitmap.setShadow(
     context: Context,
